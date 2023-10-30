@@ -60,12 +60,48 @@ def process_request(system, prompt, args):
         return ""
 
 
-def extract_description(text, info, template, args):
+def extract_description_refine(text, info, template, args):
     """
+    (Refine)
     Extract description of a character.
     :return: a dict of descriptions
              {role: [description1, description2, ...]}
     """
+    first_template = template['description']
+    left_template = template['refine_description']
+    chapters = split_by_chapter(text, args.ie_novel)
+    chapters = split_chapters_by_tokens(chapters, args.max_token)
+
+    roles = info['roles']
+    above = ""
+    descriptions = {}
+    for role in roles:
+        descriptions[role] = None
+        for chapter in chapters:
+            temp_info = {k: v for k, v in info.items() if isinstance(v, str)}
+            temp_info['role'] = role
+            temp_info['text'] = chapter
+            temp_info['above'] = above
+            if descriptions[role] is None:
+                temp_template = build_prompt(first_template, temp_info)
+            else:
+                temp_template = build_prompt(left_template, temp_info)
+            system = temp_template['system']
+            prompt = temp_template['prompt']
+            logger.info(f'Querying OpenAI {args.engine}, info: {temp_info}\n')
+            above = process_request(system=system, prompt=prompt, args=args).strip()
+            descriptions[role] = above
+    return descriptions
+
+
+def extract_description_mapreduce(text, info, template, args):
+    """
+    (MapReduce)
+    Extract description of a character.
+    :return: a dict of descriptions
+             {role: [description1, description2, ...]}
+    """
+    template = template['description']
     chapters = split_by_chapter(text, args.ie_novel)
     chapters = split_chapters_by_tokens(chapters, args.max_token)
 
@@ -85,11 +121,13 @@ def extract_description(text, info, template, args):
     return descriptions
 
 
-def summary_description(descriptions, info, template, args):
+def summary_description_mapreduce(descriptions, info, template, args):
     """
+    (MapReduce)
     Summary description of a character.
     :return: a string of description
     """
+    template = template['summary']
     summary = {}
     for k, v in descriptions.items():
         role = k

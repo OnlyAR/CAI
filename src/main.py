@@ -27,7 +27,10 @@ def parse_argument():
     parser.add_argument('--cache_path', type=str, default='../cache')
     parser.add_argument('--log_path', type=str, default='../log')
     parser.add_argument('--max_token', type=int, default=2048)
+
+    # ie args
     parser.add_argument('--ie_novel', type=str, default=None)
+    parser.add_argument('--summary', type=str, default='mapreduce')
     return parser.parse_args()
 
 

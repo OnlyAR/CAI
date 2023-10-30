@@ -1,8 +1,9 @@
 {
   "ie_template": {
     "description": "description",
-    "dialog": "dialog",
-    "summary": "description_summary"
+    "summary": "description_summary",
+    "refine_description": "refine_description",
+    "dialog": "dialog"
   },
   "max_tokens": 2048,
   "openai": {
@@ -16,5 +17,10 @@
         "key": "..."
       }
     ]
+  },
+  "xinghuo": {
+    "app_id": "...",
+    "api_secret": "...",
+    "api_key": "..."
   }
 }

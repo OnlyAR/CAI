@@ -7,7 +7,8 @@ import os
 
 import loguru
 
-from ie.extracter import extract_description, extract_dialogue, summary_description
+from ie.extracter import (extract_description_mapreduce, summary_description_mapreduce,
+                          extract_description_refine, extract_dialogue)
 
 logger = loguru.logger
 
@@ -39,10 +40,17 @@ def data_prepare(args):
 def run(args):
     text, global_info, template_dict = data_prepare(args)
     logger.info(f'Extracting information from {args.ie_novel}...')
-    description_dict = extract_description(text, global_info, template_dict['description'], args)
+
     logger.info(f'Generating summary from {args.ie_novel}...')
-    description = summary_description(description_dict, global_info, template_dict['summary'], args)
-    description = "\n".join([f'{k}: {v}' for k, v in description.items()])
+    if args.summary == 'mapreduce':
+        description_dict = extract_description_mapreduce(text, global_info, template_dict, args)
+        description = summary_description_mapreduce(description_dict, global_info, template_dict, args)
+        description = "\n".join([f'{k}: {v}' for k, v in description.items()])
+    elif args.summary == 'refine':
+        description = extract_description_refine(text, global_info, template_dict, args)
+    else:
+        raise ValueError(f'Unknown summary method {args.summary}.')
+
     write_to_file(description, os.path.join(args.out_path, args.task, args.exp_name, 'summary.txt'))
     logger.info(f'Extracting dialogue from {args.ie_novel}...')
     dialogues = extract_dialogue(text, global_info, template_dict['dialog'], args)
