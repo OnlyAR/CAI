@@ -1,0 +1,20 @@
+{
+  "ie_template": {
+    "description": "description",
+    "dialog": "dialog",
+    "summary": "description_summary"
+  },
+  "max_tokens": 2048,
+  "openai": {
+    "engine": "gpt-3.5-turbo",
+    "temperature": 0,
+    "timeout": 20,
+    "api_keys": [
+      {
+        "email": "...",
+        "password": "...",
+        "key": "..."
+      }
+    ]
+  }
+}
