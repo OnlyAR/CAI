@@ -6,6 +6,8 @@ import argparse
 import os
 
 import loguru
+import langchain
+from langchain.cache import SQLiteCache
 
 import ie
 
@@ -17,6 +19,7 @@ def parse_argument():
     # general args
     parser.add_argument('--exp_name', type=str, default=None)
     parser.add_argument('--task', type=str, default='ie')
+    parser.add_argument('--debug', action='store_true', default=False)
 
     # api args
     parser.add_argument('--engine', type=str, default='gpt-3.5-turbo')
@@ -38,10 +41,14 @@ def make_dirs(args):
     task_name = args.task
     exp_name = args.exp_name
     log_path = os.path.join(args.log_path, task_name)
+    cache_path = os.path.join(args.cache_path)
     out_path = os.path.join(args.out_path, task_name, exp_name)
 
     if not os.path.exists(log_path):
         os.makedirs(log_path)
+
+    if not os.path.exists(cache_path):
+        os.makedirs(cache_path)
 
     if not os.path.exists(out_path):
         os.makedirs(out_path)
@@ -60,6 +67,7 @@ def main():
 
     make_dirs(args)
     set_logger(args)
+    langchain.llm_cache = SQLiteCache(database_path=os.path.join(args.cache_path, "langchain.db"))
 
     if args.task == 'ie':
         ie.run(args)

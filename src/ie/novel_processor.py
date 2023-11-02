@@ -12,7 +12,6 @@ logger = loguru.logger
 
 
 def split_by_chapter(text, name):
-    # 检查所有 class 中是否有 name 属性为 name 的类
     splitter = None
     for cls in split_func.__dict__.values():
         if hasattr(cls, 'name') and getattr(cls, 'name') == name:
