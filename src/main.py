@@ -4,6 +4,7 @@
 # @Description :
 import argparse
 import os
+import time
 
 import loguru
 import langchain
@@ -42,7 +43,10 @@ def make_dirs(args):
     exp_name = args.exp_name
     log_path = os.path.join(args.log_path, task_name)
     cache_path = os.path.join(args.cache_path)
-    out_path = os.path.join(args.out_path, task_name, exp_name)
+    out_path = os.path.join(args.out_path, task_name,
+                            "{}_{}".format(exp_name, time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime())))
+
+    args.out_path = out_path
 
     if not os.path.exists(log_path):
         os.makedirs(log_path)
@@ -55,7 +59,9 @@ def make_dirs(args):
 
 
 def set_logger(args):
-    log_path = os.path.join(args.log_path, args.task, "{}.log".format(args.exp_name))
+    # 添加时间信息
+    loa_name = "{}_{}.log".format(args.exp_name, time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime()))
+    log_path = os.path.join(args.log_path, args.task, loa_name)
     loguru.logger.add(log_path)
 
 

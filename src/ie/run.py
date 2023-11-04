@@ -7,14 +7,10 @@ import os
 
 import loguru
 
+from ie.save import save_to_text_file
 from ie.extractor import extract_description, extract_dialogue
 
 logger = loguru.logger
-
-
-def write_to_file(text, filename):
-    with open(filename, 'w', encoding='utf8') as f:
-        f.write(text + "\n")
 
 
 def data_prepare(args):
@@ -37,10 +33,8 @@ def run(args):
     logger.info(f'Generating summary from {args.ie_novel}...')
     description = extract_description(text, global_info, args)
 
-    write_to_file(json.dumps(description, ensure_ascii=False, indent=4),
-                  os.path.join(args.out_path, args.task, args.exp_name, 'summary.txt'))
+    save_to_text_file(json.dumps(description, ensure_ascii=False, indent=4), 'summary.txt', args)
     logger.info(f'Extracting dialogue from {args.ie_novel}...')
     dialogues = extract_dialogue(text, global_info, args)
-    write_to_file(json.dumps(dialogues, ensure_ascii=False, indent=4),
-                  os.path.join(args.out_path, args.task, args.exp_name, 'dialogue.json'))
+    save_to_text_file(json.dumps(dialogues, ensure_ascii=False, indent=4), 'dialogue.json', args)
     logger.info(f'All done!')
